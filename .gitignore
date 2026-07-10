@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-electron/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# AI settings (contains API keys)
+server/data/ai-settings.json
+
+# Database
+*.db
+*.sqlite
+*.db-journal
+
+# Logs
+server/data/logs/
+
+# Debug files
+server/data/last-voice-error.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Temp files
+*.tmp
+*.log

@@ -1,0 +1,14 @@
+**/node_modules
+**/.venv
+**/dist
+**/*.db
+**/*.db-journal
+**/.git
+**/.env
+**/.env.*
+**/.DS_Store
+**/*.ttc
+STHeiti.ttf
+agent/
+.gitignore
+README.md

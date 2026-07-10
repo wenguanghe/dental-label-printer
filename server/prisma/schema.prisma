@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Dictionary {
+  id        Int      @id @default(autoincrement())
+  type      String   // INSTRUMENT, STERILIZER, CHECKER, FURNACE
+  name      String
+  pinyin    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([type, name])
+}
+
+model PrintTask {
+  id             Int      @id @default(autoincrement())
+  sterilizerName String
+  checkerName    String
+  furnaceNo      String?
+  sterilizeTime  DateTime
+  expireTime     DateTime
+  totalQuantity  Int
+  createdAt      DateTime @default(now())
+
+  items PrintItem[]
+}
+
+model PrintItem {
+  id             Int    @id @default(autoincrement())
+  taskId         Int
+  instrumentName String
+  quantity       Int
+
+  task PrintTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}

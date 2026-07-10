@@ -1,0 +1,58 @@
+{
+  "name": "dental-sterilization-printer",
+  "version": "1.0.0",
+  "description": "口腔门诊消毒标签打印系统",
+  "main": "electron/main.js",
+  "scripts": {
+    "build:frontend": "cd frontend && npm ci && npx vite build",
+    "build:prisma": "cd server && npx prisma generate",
+    "build:agent": "cd agent && npm ci",
+    "build:win": "npm run build:frontend && npm run build:prisma && npm run build:agent && electron-builder --win",
+    "electron:dev": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.dental.sterilization",
+    "productName": "口腔门诊消毒标签打印系统",
+    "copyright": "Copyright 2026",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "extraResources": [
+      {
+        "from": "server",
+        "to": "server",
+        "filter": ["src/**/*", "node_modules/**/*", "prisma/**/*", "fonts/**/*", "package.json"]
+      },
+      {
+        "from": "agent",
+        "to": "agent",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "frontend/dist",
+        "to": "server/public"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "消毒标签打印系统"
+    },
+    "asar": false
+  }
+}
