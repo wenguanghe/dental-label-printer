@@ -16,7 +16,7 @@
 
 | 层级 | 技术 |
 |------|------|
-| 前端 | Vue 3 + Vite + Tailwind CSS + Pinia |
+| 前端 | Vue 3 + Vite + Element Plus + Pinia |
 | 后端 | Express + Socket.io + Prisma + SQLite |
 | 打印 | PDFKit + QRCode |
 | 桌面 | Electron（可选） |
@@ -24,10 +24,10 @@
 ## 项目结构
 
 ```
-├── frontend/         Vue 3 前端
+├── frontend/         Vue 3 前端（Element Plus UI）
 │   └── src/
 │       ├── components/   InstrumentSelector, PrinterStatus, QuantityControl, TimePicker
-│       ├── views/        PrintView, ManageView, HistoryView, StatsView, SettingsView
+│       ├── views/        PrintView, ManageView
 │       ├── stores/       Pinia 状态管理
 │       └── router/       Vue Router
 ├── server/           Express 后端
