@@ -1,16 +1,20 @@
 <template>
-  <div>
-    <label class="label-text" :class="{ required }">{{ label }}</label>
-    <input :value="modelValue" type="datetime-local" class="input-field"
-      @input="emit('update:modelValue', $event.target.value)" />
-    <!-- 快捷按钮 (仅失效时间显示) -->
-    <div v-if="showShortcuts" class="flex flex-wrap gap-2 mt-2">
-      <button v-for="s in shortcuts" :key="s.label" class="btn-secondary !py-1.5 !px-3 !min-h-[36px] text-xs"
-        @click="s.action">
+  <el-form-item :label="label" :required="required">
+    <el-date-picker
+      :model-value="modelValue"
+      type="datetime"
+      placeholder="选择日期时间"
+      format="YYYY-MM-DD HH:mm"
+      value-format="YYYY-MM-DDTHH:mm"
+      style="width: 100%;"
+      @update:model-value="(val) => emit('update:modelValue', val)"
+    />
+    <div v-if="showShortcuts" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+      <el-button v-for="s in shortcuts" :key="s.label" size="small" @click="s.action">
         {{ s.label }}
-      </button>
+      </el-button>
     </div>
-  </div>
+  </el-form-item>
 </template>
 
 <script setup>

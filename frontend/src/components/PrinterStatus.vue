@@ -1,17 +1,26 @@
 <template>
-  <div v-if="printStore.agentStatus.connected"
-    class="bg-green-100 text-green-800 text-xs px-4 py-1.5 flex items-center gap-2">
-    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+  <el-tag
+    v-if="printStore.agentStatus.connected"
+    type="success"
+    effect="light"
+    style="margin-bottom: 8px;"
+  >
+    <el-icon style="margin-right: 4px;"><CircleCheck /></el-icon>
     打印机已连接: {{ printStore.agentStatus.printerName || '就绪' }}
-  </div>
-  <div v-else-if="printStore.initialized"
-    class="bg-red-100 text-red-800 text-xs px-4 py-1.5 flex items-center gap-2">
-    <span class="w-2 h-2 bg-red-500 rounded-full" />
+  </el-tag>
+  <el-tag
+    v-else-if="printStore.initialized"
+    type="danger"
+    effect="light"
+    style="margin-bottom: 8px;"
+  >
+    <el-icon style="margin-right: 4px;"><WarningFilled /></el-icon>
     打印 Agent 未连接
-  </div>
+  </el-tag>
 </template>
 
 <script setup>
+import { CircleCheck, WarningFilled } from '@element-plus/icons-vue'
 import { usePrintStore } from '../stores/print.js'
 const printStore = usePrintStore()
 </script>
