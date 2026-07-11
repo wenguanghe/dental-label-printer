@@ -1,17 +1,24 @@
 <template>
   <div class="page-container">
     <!-- 密码门 -->
-    <div v-if="!unlocked" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh;">
-      <h1 class="page-title">管理入口</h1>
-      <el-input v-model="password" type="password" placeholder="请输入管理密码"
-        style="width: 240px; text-align: center;" @keyup.enter="checkPassword" show-password />
-      <el-button type="primary" style="margin-top: 16px; width: 240px;" @click="checkPassword">进入</el-button>
-      <el-alert v-if="error" :title="error" type="error" show-icon :closable="false" style="margin-top: 12px; width: 240px;" />
+    <div v-if="!unlocked" class="login-container">
+      <div class="login-logo">
+        <el-icon :size="36" color="white"><Setting /></el-icon>
+      </div>
+      <div class="login-title">管理入口</div>
+      <div class="login-subtitle">请输入管理密码以继续</div>
+      <div class="login-form">
+        <el-input v-model="password" type="password" placeholder="管理密码" class="login-input"
+          @keyup.enter="checkPassword" show-password size="large" />
+        <el-button type="primary" class="login-btn" @click="checkPassword">进入管理</el-button>
+        <el-alert v-if="error" :title="error" type="error" show-icon :closable="false"
+          style="margin-top: 16px; border-radius: 8px;" />
+      </div>
     </div>
 
     <!-- 管理内容 -->
     <div v-else>
-      <el-tabs v-model="activeTab" type="border-card" style="border-radius: 8px;">
+      <el-tabs v-model="activeTab" type="border-card">
         <!-- 历史 -->
         <el-tab-pane label="历史补打" name="history">
           <el-date-picker v-model="selectedDate" type="date" placeholder="选择日期"
@@ -165,6 +172,26 @@
             </el-form>
           </div>
 
+          <!-- 修改密码 -->
+          <div class="setting-card">
+            <div class="setting-card-title">🔑 修改管理密码</div>
+            <el-form label-position="top" size="small" style="max-width: 320px;">
+              <el-form-item label="原密码">
+                <el-input v-model="pwdForm.oldPassword" type="password" placeholder="请输入原密码" show-password />
+              </el-form-item>
+              <el-form-item label="新密码">
+                <el-input v-model="pwdForm.newPassword" type="password" placeholder="请输入新密码（至少 4 位）" show-password />
+              </el-form-item>
+              <el-form-item label="确认新密码">
+                <el-input v-model="pwdForm.confirmPassword" type="password" placeholder="再次输入新密码" show-password />
+              </el-form-item>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <el-button type="primary" size="small" @click="changePassword" :loading="pwdChanging">修改密码</el-button>
+                <span v-if="pwdStatus" style="font-size: 12px;" :style="{ color: pwdStatus.type === 'success' ? '#67c23a' : '#f56c6c' }">{{ pwdStatus.text }}</span>
+              </div>
+            </el-form>
+          </div>
+
           <!-- 日志设置 -->
           <div class="setting-card">
             <div class="setting-card-title">📝 日志设置</div>
@@ -241,7 +268,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { Loading, Document, Tickets } from '@element-plus/icons-vue'
+import { Loading, Document, Tickets, Setting } from '@element-plus/icons-vue'
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip } from 'chart.js'
 import { usePrintStore } from '../stores/print.js'
@@ -249,19 +276,19 @@ import { usePrintStore } from '../stores/print.js'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip)
 
 const printStore = usePrintStore()
-const MANAGE_PASSWORD = '123456'
 
 const unlocked = ref(false)
 const password = ref('')
 const error = ref('')
 
-function checkPassword() {
-  if (password.value === MANAGE_PASSWORD) {
+async function checkPassword() {
+  try {
+    await axios.post('/api/password/check', { password: password.value })
     unlocked.value = true; error.value = ''
     loadHistory(); loadStats()
     dictTypes.forEach(d => loadDict(d.type))
     loadAiSettings()
-  } else { error.value = '密码错误' }
+  } catch (e) { error.value = e.response?.data?.error || '密码错误' }
 }
 
 const activeTab = ref('history')
@@ -435,6 +462,26 @@ async function addItem(type) {
 
 async function deleteItem(type, id) {
   try { await axios.delete(`/api/dict/${id}`); await loadDict(type) } catch (e) { ElMessage.error('删除失败') }
+}
+
+// === 修改密码 ===
+const pwdForm = reactive({ oldPassword: '', newPassword: '', confirmPassword: '' })
+const pwdChanging = ref(false)
+const pwdStatus = ref(null)
+
+async function changePassword() {
+  pwdStatus.value = null
+  if (!pwdForm.oldPassword) { pwdStatus.value = { type: 'error', text: '请输入原密码' }; return }
+  if (!pwdForm.newPassword || pwdForm.newPassword.length < 4) { pwdStatus.value = { type: 'error', text: '新密码不能少于 4 位' }; return }
+  if (pwdForm.newPassword !== pwdForm.confirmPassword) { pwdStatus.value = { type: 'error', text: '两次输入的新密码不一致' }; return }
+  pwdChanging.value = true
+  try {
+    await axios.post('/api/password/change', { oldPassword: pwdForm.oldPassword, newPassword: pwdForm.newPassword })
+    pwdStatus.value = { type: 'success', text: '✓ 密码修改成功' }
+    pwdForm.oldPassword = ''; pwdForm.newPassword = ''; pwdForm.confirmPassword = ''
+    setTimeout(() => { pwdStatus.value = null }, 3000)
+  } catch (e) { pwdStatus.value = { type: 'error', text: e.response?.data?.error || '修改失败' } }
+  finally { pwdChanging.value = false }
 }
 </script>
 

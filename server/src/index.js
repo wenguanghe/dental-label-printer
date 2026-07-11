@@ -14,6 +14,7 @@ import historyRoutes from './routes/history.js';
 import statsRoutes from './routes/stats.js';
 import voiceRoutes from './routes/voice.js';
 import aiSettingsRoutes from './routes/aiSettings.js';
+import passwordRoutes from './routes/password.js';
 import { setupSocket } from './socket.js';
 
 export const prisma = new PrismaClient();
@@ -31,6 +32,7 @@ app.use('/api/print', historyRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/voice', voiceRoutes);
 app.use('/api/ai-settings', aiSettingsRoutes);
+app.use('/api/password', passwordRoutes);
 
 // 健康检查
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));

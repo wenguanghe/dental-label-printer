@@ -13,6 +13,9 @@ dist-electron/
 # AI settings (contains API keys)
 server/data/ai-settings.json
 
+# Password file
+server/data/manage-password.json
+
 # Database
 *.db
 *.sqlite
@@ -33,6 +36,10 @@ server/data/last-voice-error.json
 
 # OS
 Thumbs.db
+
+# Storage (uploaded files)
+server/storage/
+storage/
 
 # Temp files
 *.tmp
